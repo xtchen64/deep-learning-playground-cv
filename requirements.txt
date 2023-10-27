@@ -1,7 +1,0 @@
-# Run `pip install -r requirements.txt` to install the required packages
-numpy
-pandas
-matplotlib
-tensorflow
-gin-config
-scikit-learn

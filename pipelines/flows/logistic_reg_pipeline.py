@@ -1,5 +1,6 @@
 import gin
 from models.logistic_reg import LogisticRegression
+from utils.common_utils import *
 
 @gin.configurable
 def main(learning_rate, epochs):
