@@ -3,3 +3,5 @@ numpy
 pandas
 matplotlib
 tensorflow
+gin-config
+scikit-learn
