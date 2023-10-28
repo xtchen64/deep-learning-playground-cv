@@ -29,11 +29,18 @@ class LogisticReg():
         # flatten data
         train_X_flat = train_X.reshape(train_X.shape[0], -1)
 
-        print(f"Training logistic reg.")
+        print(f"\nTraining logistic reg...")
         self.model.fit(train_X_flat, train_y)
 
+        # report training performance
+        val_acc, val_f1 = self.evaluate(train_X, train_y)
+        print("\nTraining Dataset Performance:")
+        print(f"Training accuracy: {val_acc}")
+        print(f"Training F1: {val_f1}")
+        
         # report validation performance
         val_acc, val_f1 = self.evaluate(val_X, val_y)
+        print("\nValidation Dataset Performance:")
         print(f"Validation accuracy: {val_acc}")
         print(f"Validation F1: {val_f1}")
     

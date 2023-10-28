@@ -8,7 +8,7 @@ class BaseDataProcessor:
     
     def setup(self):
         # load mnist datasets
-        print(": Loading MNIST datasets...")
+        print("Loading MNIST datasets...")
         (train_val_X, train_val_y), (self.test_X, self.test_y) = mnist.load_data()
 
         # further split train_val into train and val
@@ -17,6 +17,7 @@ class BaseDataProcessor:
         )
 
         # print sizes of datasets
+        print("\nDataset shapes:")
         print('train_X: ' + str(self.train_X.shape))
         print('train_y: ' + str(self.train_y.shape))
         print('val_X: ' + str(self.val_X.shape))
