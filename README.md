@@ -9,8 +9,8 @@ Note that the environment does not use brew or conda.
     - Activate this venv in terminal: `source mnist/bin/activate`
 2. Install required packages in terminal: `pip install -e .`
 
-## Run code:
-- To run pipeline in terminal, configure with gin files and run commands such as `python3 pipelines/flows/logistic_reg_pipeline.py`. 
+## Train and evaluate models:
+- To run pipeline in terminal, configure with gin files and run commands such as `python pipelines/flows/logistic_reg_pipeline.py`. 
 - Alternatively, experiment with the code in the example notebooks in the `notebooks` folder.
 
 ## Supported Models:

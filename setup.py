@@ -11,5 +11,6 @@ setup(
         'matplotlib',
         'gin-config',
         'tensorflow',
+        'ray[tune]',
     ]
 )

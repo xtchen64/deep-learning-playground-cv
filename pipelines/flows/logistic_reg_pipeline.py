@@ -3,7 +3,9 @@ from models.logistic_reg import LogisticReg
 from data_processors.base_data_processor import BaseDataProcessor
 
 @gin.configurable
-def main(penalty, C, random_state, max_iter):
+def main(configs):
+    # TODO: add more configs as gin configurable (e.g. computation budget)
+    # TODO: configure GPU for ray tune (e.g. might need to use specific packages)
 
     # process data
     data_processor = BaseDataProcessor()
@@ -11,14 +13,26 @@ def main(penalty, C, random_state, max_iter):
     train_X, train_y, val_X, val_y, test_X, test_y = data_processor.load_data()
 
     # initialize model
-    model = LogisticReg(penalty, C, random_state, max_iter)
+    lr = LogisticReg(
+        train_X,
+        train_y,
+        val_X,
+        val_y,
+        configs,
+    )
 
-    # train model
-    model.train(train_X, train_y, val_X, val_y)
+    # train model with ray tune
+    best_lr_metrics = lr.train_with_ray_tune()
 
-    # evaluate model
-    acc, f1 = model.evaluate(test_X, test_y)
-    print("\nTest Dataset Performance:")
+    # evaluate model on training set
+    print("\nBest model training performance:")
+    acc, f1 = lr.evaluate(lr.model, train_X, train_y)
+    print("Train acc: {}".format(acc))
+    print("Train f1: {}".format(f1))
+
+    # evaluate model on test set
+    print("\nBest model test performance:")
+    acc, f1 = lr.evaluate(lr.model, test_X, test_y)
     print("Test acc: {}".format(acc))
     print("Test f1: {}".format(f1))
 

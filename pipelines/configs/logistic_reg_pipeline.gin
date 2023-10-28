@@ -1,4 +1,6 @@
-main.penalty = "l2"
-main.C = 1.0
-main.random_state = 0
-main.max_iter = 100
+main.configs = {
+    'penalty': ['l2'],
+    'C': [1.0, 0.1, 0.01],
+    'random_state': [0, 1],
+    'max_iter': [10, 50, 100],
+}
