@@ -1,2 +1,2 @@
-LogisticRegressionPipeline.learning_rate = 0.01
-LogisticRegressionPipeline.epochs = 2
+main.learning_rate = 0.01
+main.epochs = 2

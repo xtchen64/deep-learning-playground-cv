@@ -9,6 +9,7 @@ setup(
         'pandas',
         'scikit-learn',
         'matplotlib',
-        'gin-config'
+        'gin-config',
+        'tensorflow',
     ]
 )
