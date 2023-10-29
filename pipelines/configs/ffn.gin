@@ -1,1 +1,1 @@
-main.write_results = True
+main.write_results = False
