@@ -42,13 +42,15 @@ def write_results_to_file(acc, f1, model_name, filename="result.csv"):
             else:
                 content.append(header)
 
-            # Check if model line exists
+            # Check if model line exists and update/overwrite if necessary
             model_exists = False
-            for line in content:
+            for idx, line in enumerate(content):
                 if line.startswith(model_name):
                     model_exists = True
+                    content[idx] = data_line  # Overwrite the line with new data
                     break
-            
+
+            # If model does not exist, append the new line
             if not model_exists:
                 content.append(data_line)
 

@@ -23,7 +23,7 @@ def main(configs, write_results=True):
     )
 
     # train model with ray tune
-    best_classifier_metrics = classifier.train_with_ray_tune()
+    classifier.train_with_ray_tune()
 
     # evaluate model on training set
     print("\nBest model training performance:")

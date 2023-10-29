@@ -1,3 +1,7 @@
+"""
+This file contains the setup for the project.
+To setup environment, run `pip install -e .` in terminal.
+"""
 from setuptools import setup, find_packages
 
 setup(

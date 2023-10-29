@@ -9,11 +9,16 @@ class BaseDataProcessor:
     def setup(self):
         # load mnist datasets
         print("Loading MNIST datasets...")
-        (train_val_X, train_val_y), (self.test_X, self.test_y) = mnist.load_data()
+        (self.train_val_X, self.train_val_y), (self.test_X, self.test_y) = mnist.load_data()
+        
+        # normalize train_val_X and test_X
+        print("Normalizing datasets...")
+        self.train_val_X = self.train_val_X / 255.0
+        self.test_X = self.test_X / 255.0
 
         # further split train_val into train and val
         self.train_X, self.val_X, self.train_y, self.val_y = train_test_split(
-            train_val_X, train_val_y, test_size=0.3, random_state=0
+            self.train_val_X, self.train_val_y, test_size=0.3, random_state=0
         )
 
         # print sizes of datasets

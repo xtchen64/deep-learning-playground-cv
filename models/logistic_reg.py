@@ -1,22 +1,18 @@
 from ray import tune
+import ray
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
 
 
 class LogisticReg():
-    def __init__(
-        self, 
-        train_X,
-        train_y,
-        val_X,
-        val_y,
-        configs,
-    ):
+    def __init__(self, train_X, train_y, val_X, val_y, configs):
         self.configs = configs
-        self.train_X = train_X
-        self.train_y = train_y
-        self.val_X = val_X
-        self.val_y = val_y
+
+        # Put large datasets in the Ray object store
+        self.train_X_ref = ray.put(train_X)
+        self.train_y_ref = ray.put(train_y)
+        self.val_X_ref = ray.put(val_X)
+        self.val_y_ref = ray.put(val_y)
 
     def train(self, config, verbose=False):
         """
@@ -26,6 +22,13 @@ class LogisticReg():
         Returns:
         model: trained model
         """
+        # Get the actual data from the Ray object store
+        train_X = ray.get(self.train_X_ref)
+        train_y = ray.get(self.train_y_ref)
+        val_X = ray.get(self.val_X_ref)
+        val_y = ray.get(self.val_y_ref)
+
+        # Create model
         model = LogisticRegression(
             penalty=config["penalty"], 
             C=config["C"],
@@ -34,16 +37,16 @@ class LogisticReg():
         )
 
         # flatten data
-        train_X_flat = self.train_X.reshape(self.train_X.shape[0], -1)
+        train_X_flat = train_X.reshape(train_X.shape[0], -1)
 
         if verbose:
             print(f"\nTraining logistic reg...")
         
-        model.fit(train_X_flat, self.train_y)
+        model.fit(train_X_flat, train_y)
         self.model = model
 
         # report validation performance
-        val_acc, val_f1 = self.evaluate(model, self.val_X, self.val_y)
+        val_acc, val_f1 = self.evaluate(model, val_X, val_y)
         if verbose:
             print("\nValidation Dataset Performance:")
             print(f"Validation accuracy: {val_acc}")
@@ -81,23 +84,8 @@ class LogisticReg():
 
         # Train the model with the best hyperparameters
         self.train(best_config)
-        best_model = self.model
 
         print("Training completed with the best hyperparameters.")
-
-        # evaluate best model
-        val_acc, val_f1 = self.evaluate(best_model, self.val_X, self.val_y)
-        print("\nBest Model Performance:")
-        print(f"Validation accuracy: {val_acc}")
-        print(f"Validation F1: {val_f1}")
-
-        # return metrics
-        metrics = {
-            "val_accuracy": val_acc,
-            "val_f1": val_f1,
-        }
-
-        return metrics
     
     def predict(self, model, X):
         """
