@@ -10,8 +10,9 @@ setup(
         'scikit-learn',
         'matplotlib',
         'gin-config',
-        'tensorflow==2.13.0',
+        'tensorflow==2.15.0rc0',
         'tensorflow-metal',
         'ray[tune]',
+        'ipywidgets'
     ]
 )

@@ -10,6 +10,11 @@ class Ffn():
         self.train_y = train_y
         self.val_X = val_X
         self.val_y = val_y
+    
+    def objective(self, config):
+        """Wrapper function to train the model using the provided config and return validation metrics."""
+        metrics = self.train(config)
+        tune.train.report(**metrics)
 
     def build_model(self, config):
         """Builds a simple feed-forward neural network based on the given config."""
@@ -20,7 +25,7 @@ class Ffn():
             tf.keras.layers.Dense(10, activation='softmax')
         ])
         
-        optimizer = tf.keras.optimizers.Adam(learning_rate=config["learning_rate"])
+        optimizer = tf.keras.optimizers.legacy.Adam(learning_rate=config["learning_rate"])
         
         model.compile(optimizer=optimizer,
                       loss='sparse_categorical_crossentropy',
@@ -68,7 +73,7 @@ class Ffn():
         analysis = tune.run(
             self.train,
             config=search_space,
-            num_samples=10,
+            num_samples=2,
             resources_per_trial={"cpu": 5, "gpu": 0},
         )
 
