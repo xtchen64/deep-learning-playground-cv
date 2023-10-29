@@ -1,0 +1,10 @@
+main.configs = {
+    "hidden_units": [128, 256],                # Different possible number of hidden units
+    "activation": ['relu', 'tanh', 'sigmoid'],      # Different possible activation functions
+    "epochs": [1, 2, 3],                         # Different possible epochs 
+    "batch_size": [32, 64],                    # Different possible batch sizes
+    "learning_rate": [0.001, 0.01, 0.1],            # Different possible learning rates
+    "dropout_rate": [0.2, 0.4],                # Different possible dropout rates
+    "initializer": ['glorot_uniform', 'he_uniform'] # Different possible initializers
+}
+main.write_results = True

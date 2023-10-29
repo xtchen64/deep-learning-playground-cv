@@ -10,11 +10,6 @@ class Ffn():
         self.train_y = train_y
         self.val_X = val_X
         self.val_y = val_y
-    
-    def objective(self, config):
-        """Wrapper function to train the model using the provided config and return validation metrics."""
-        metrics = self.train(config)
-        tune.train.report(**metrics)
 
     def build_model(self, config):
         """Builds a simple feed-forward neural network based on the given config."""
