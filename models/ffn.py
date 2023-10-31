@@ -90,7 +90,7 @@ class Ffn():
         
         return model
 
-    def train(self, config, verbose=False):
+    def train(self, config, verbose=False, tensorboard=False):
         # Get the actual data from the Ray object store
         train_X = ray.get(self.train_X_ref)
         train_y = ray.get(self.train_y_ref)
@@ -105,6 +105,16 @@ class Ffn():
         if verbose:
             print(f"\nTraining FFN...")
 
+        callbacks = []
+
+        # Add TensorBoard callback
+        if tensorboard:
+            tensorboard_callback = tf.keras.callbacks.TensorBoard(
+                log_dir="/Users/xtchen/Projects/deep-learning-with-mnist/results/tensorboard", 
+                histogram_freq=1
+            )
+            callbacks.append(tensorboard_callback)
+
         if self.configs["early_stopping"]:
             early_stopping = tf.keras.callbacks.EarlyStopping(
                 monitor='val_loss',  # or 'val_accuracy'
@@ -112,9 +122,7 @@ class Ffn():
                 verbose=1,
                 restore_best_weights=True  # Restore model weights from the epoch with the best value of the monitored quantity
             )
-            callbacks = [early_stopping]
-        else:
-            callbacks = None
+            callbacks.append(early_stopping)
         
         model.fit(
             train_X, 

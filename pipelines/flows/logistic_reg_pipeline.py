@@ -43,7 +43,7 @@ def main(configs, write_results=True):
             acc, 
             f1, 
             model_name="logistic_reg", 
-            filename="/Users/xtchen/Projects/deep-learning-with-mnist/result.csv")
+            filename="/Users/xtchen/Projects/deep-learning-with-mnist/results/result.csv")
 
 if __name__ == "__main__":
     gin.parse_config_file('pipelines/configs/logistic_reg_pipeline.gin')

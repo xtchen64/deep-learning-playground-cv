@@ -10,8 +10,9 @@ Note that the environment does not use brew or conda.
 2. Install required packages in terminal: `pip install -e .`
 
 ## Train and evaluate models:
-- To run pipeline in terminal, configure with gin files and run commands such as `python pipelines/flows/logistic_reg_pipeline.py`. 
-- Alternatively, experiment with the code in the example notebooks in the `notebooks` folder.
+1. To run pipeline in terminal, configure with gin files and run commands such as `python pipelines/flows/logistic_reg_pipeline.py`. 
+Alternatively, experiment with the code in the example notebooks in the `notebooks` folder.
+2. For tensorflow models with tensorboard configured, run command such as `tensorboard --logdir results/tensorboard` to view tensorboard, where `results/tensorboard` is the folder for the logs.
 
 ## Supported Models:
 1. Logistic Regression

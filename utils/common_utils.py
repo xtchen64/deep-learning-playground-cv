@@ -18,7 +18,12 @@ def auto_assign(func):
         
     return wrapper
 
-def write_results_to_file(acc, f1, model_name, filename="result.csv"):
+def write_results_to_file(
+        acc, 
+        f1, 
+        model_name, 
+        filename="/Users/xtchen/Projects/deep-learning-with-mnist/results/result.csv"
+    ):
     """
     Writes the results to the given file.
     :param acc: accuracy
