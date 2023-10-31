@@ -123,7 +123,7 @@ class Ffn():
             callbacks=callbacks,
             epochs=config["epochs"], 
             batch_size=config["batch_size"], 
-            verbose=0
+            verbose=verbose
         )
 
         # Evaluate model
