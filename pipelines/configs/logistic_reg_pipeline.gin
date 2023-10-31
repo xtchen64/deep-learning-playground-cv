@@ -1,7 +1,7 @@
 main.configs = {
     'penalty': ['l2'],
     'C': [1.0, 0.1, 0.01],
-    'random_state': [0, 1],
+    'random_state': [0],
     'max_iter': [20, 50, 100],
 }
 main.write_results = True

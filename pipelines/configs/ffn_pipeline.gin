@@ -4,9 +4,9 @@ main.configs = {
         [128, 64, 32],
     ],                # Different possible number of hidden units
     "activation": ['relu', 'tanh'],      # Different possible activation functions
-    "epochs": [10],                         # Different possible epochs 
+    "epochs": [20],                         # Different possible epochs 
     "batch_size": [64, 128],                    # Different possible batch sizes
-    "learning_rate": [1e-4, 1e-3, 1e-2],            # Different possible learning rates
+    "learning_rate": [1e-5, 1e-4, 1e-3],            # Different possible learning rates
     "dropout_rate": [0.3, 0.5, 0.7],                # Different possible dropout rates
     "initializer": ['glorot_uniform', 'he_uniform'], # Different possible initializers
     "early_stopping": [True]
