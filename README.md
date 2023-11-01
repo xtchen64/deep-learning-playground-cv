@@ -16,3 +16,5 @@ Alternatively, experiment with the code in the example notebooks in the `noteboo
 
 ## Supported Models:
 1. Logistic Regression
+2. Feed Forward Network (FFN)
+3. [WIP] Convoluted Neural Network (CNN)
