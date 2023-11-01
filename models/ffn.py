@@ -156,7 +156,8 @@ class Ffn(BaseModel):
             "batch_size": tune.choice(self.configs["batch_size"]),
             "learning_rate": tune.choice(self.configs["learning_rate"]),
             "dropout_rate": tune.choice(self.configs["dropout_rate"]),
-            "initializer": tune.choice(self.configs["initializer"])
+            "initializer": tune.choice(self.configs["initializer"]),
+            "early_stopping": tune.choice(self.configs["early_stopping"])
         }
 
         analysis = tune.run(
