@@ -1,19 +1,13 @@
 from ray import tune
 import ray
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, f1_score
+from models.base_model import BaseModel
+from overrides import overrides
 
 
-class LogisticReg():
-    def __init__(self, train_X, train_y, val_X, val_y, configs):
-        self.configs = configs
+class LogisticReg(BaseModel):
 
-        # Put large datasets in the Ray object store
-        self.train_X_ref = ray.put(train_X)
-        self.train_y_ref = ray.put(train_y)
-        self.val_X_ref = ray.put(val_X)
-        self.val_y_ref = ray.put(val_y)
-
+    @overrides
     def train(self, config, verbose=False):
         """
         Trains the model on the given data. Returns the trained model.
@@ -60,6 +54,7 @@ class LogisticReg():
         
         return metrics
 
+    @overrides
     def train_with_ray_tune(self):
         """
         Trains the model on the given data using ray tune. Returns the best model.
@@ -87,6 +82,7 @@ class LogisticReg():
 
         print("Training completed with the best hyperparameters.")
     
+    @overrides
     def predict(self, model, X):
         """
         Predicts the labels for the given data.
@@ -96,21 +92,3 @@ class LogisticReg():
         X_flat = X.reshape(X.shape[0], -1)
         y_pred = model.predict(X_flat)
         return y_pred
-
-    def evaluate(self, model, X, y):
-        """
-        Evaluates the model on the given data.
-        :param model: trained model
-        :param X: 3d np array to predict on (num_samples, height, width)
-        :param y: 2d array of true labels (num_samples,)
-        """
-        # Predict using the trained model
-        predictions = self.predict(model, X)
-
-        # Calculate accuracy
-        accuracy = accuracy_score(y, predictions)
-
-        # Calculate Macro-Averaged F1-score
-        f1_macro = f1_score(y, predictions, average='macro')
-
-        return accuracy, f1_macro

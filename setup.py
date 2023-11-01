@@ -17,6 +17,7 @@ setup(
         'tensorflow==2.15.0rc0',
         'tensorflow-metal',
         'ray[tune]',
-        'ipywidgets'
+        'ipywidgets',
+        'overrides'
     ]
 )

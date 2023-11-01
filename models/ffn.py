@@ -2,17 +2,11 @@ import numpy as np
 import tensorflow as tf
 from ray import tune
 import ray
-from sklearn.metrics import accuracy_score, f1_score
+from models.base_model import BaseModel
+from overrides import overrides
 
-class Ffn():
-    def __init__(self, train_X, train_y, val_X, val_y, configs):
-        self.configs = configs
 
-        # Put large datasets in the Ray object store
-        self.train_X_ref = ray.put(train_X)
-        self.train_y_ref = ray.put(train_y)
-        self.val_X_ref = ray.put(val_X)
-        self.val_y_ref = ray.put(val_y)
+class Ffn(BaseModel):
 
     def build_model(self, train_X, config):
         """
@@ -90,6 +84,7 @@ class Ffn():
         
         return model
 
+    @overrides
     def train(self, config, verbose=False, tensorboard=False):
         # Get the actual data from the Ray object store
         train_X = ray.get(self.train_X_ref)
@@ -151,6 +146,7 @@ class Ffn():
         
         return metrics
 
+    @overrides
     def train_with_ray_tune(self):
         print("\nStart Ray Tune hyperparameter search...")
         search_space = {
@@ -178,16 +174,12 @@ class Ffn():
 
         print("Training completed with the best hyperparameters.")
 
+    @overrides
     def predict(self, model, X):
         pred_probs = model.predict(X)
         y_pred = np.argmax(pred_probs, axis=1)
         return y_pred
 
-    def evaluate(self, model, X, y):
-        predictions = self.predict(model, X)
-        accuracy = accuracy_score(y, predictions)
-        f1_macro = f1_score(y, predictions, average='macro')
-        return accuracy, f1_macro
 
 class CustomModel(tf.keras.Model):
     """
