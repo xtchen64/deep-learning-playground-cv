@@ -40,22 +40,38 @@ class Cnn(BaseModel):
         kernel_size = config["conv_kernel_size"]
 
         # Add CNN layers: 3 Conv2D layers and 2 MaxPooling2D layers
+        # 1st conv layer
         model.add(layers.Conv2D(
             config["conv_channels"][0], 
             (kernel_size, kernel_size), 
-            activation=config["activation"], 
             input_shape=train_X.shape[1:],
             padding=pad,
             name="conv_1"
-        ))  # 1st conv layer
-        model.add(layers.MaxPooling2D((2, 2), padding=pad, name="maxpool_1")) # 1st max pooling layer
+        ))
+        model.add(layers.BatchNormalization(name="batch_norm_1"))  # Add Batch Normalization after Convolution
+        model.add(layers.Activation(activation, name="activation_1"))  # Add Activation after Batch Normalization
+        model.add(layers.MaxPooling2D((2, 2), padding=pad, name="maxpool_1"))  # 1st max pooling layer
+
+        # 2nd conv layer
         model.add(layers.Conv2D(
-            config["conv_channels"][1], (kernel_size, kernel_size), activation=activation, padding=pad, name="conv_2"
-        ))  # 2nd conv layer
-        model.add(layers.MaxPooling2D((2, 2), padding=pad, name="maxpool_2")) # 2nd max pooling layer
+            config["conv_channels"][1], 
+            (kernel_size, kernel_size), 
+            padding=pad, 
+            name="conv_2"
+        ))
+        model.add(layers.BatchNormalization(name="batch_norm_2"))  # Add Batch Normalization after Convolution
+        model.add(layers.Activation(activation, name="activation_2"))  # Add Activation after Batch Normalization
+        model.add(layers.MaxPooling2D((2, 2), padding=pad, name="maxpool_2"))  # 2nd max pooling layer
+
+        # 3rd conv layer
         model.add(layers.Conv2D(
-            config["conv_channels"][2], (kernel_size, kernel_size), activation=activation, padding=pad, name="conv_3"
-        ))  # 3rd conv layer
+            config["conv_channels"][2], 
+            (kernel_size, kernel_size), 
+            padding=pad, 
+            name="conv_3"
+        ))
+        model.add(layers.BatchNormalization(name="batch_norm_3"))  # Add Batch Normalization after Convolution
+        model.add(layers.Activation(activation, name="activation_3"))  # Add Activation after Batch Normalization
 
         # Add Dense layers
         model.add(layers.Flatten(name="flatten"))  # Flatten output of conv layers
