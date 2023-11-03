@@ -5,85 +5,75 @@ import ray
 from models.base_model import BaseModel
 from overrides import overrides
 from tensorflow.keras import models, layers
+from tensorflow.keras import regularizers
 
 
-class Cnn(BaseModel):
+class Resnet(BaseModel):
+
+    def _residual_block(self, x, filters, kernel_size, padding, activation, batchnorm_momentum, name, l2_penalty):
+        # Residual block with two convolutional layers and a skip connection
+        input_tensor = x
+
+        # Adjust the number of channels in the input_tensor to match `filters`
+        # using a 1x1 convolution if the number of filters is different.
+        if input_tensor.shape[-1] != filters:
+            input_tensor = layers.Conv2D(filters, (1, 1), padding=padding, name=name+"_conv0", kernel_regularizer=regularizers.l2(l2_penalty))(input_tensor)
+            input_tensor = layers.BatchNormalization(momentum=batchnorm_momentum, name=name+"_bn0")(input_tensor)
+
+        x = layers.Conv2D(filters, kernel_size, padding=padding, activation=activation, name=name+"_conv1", kernel_regularizer=regularizers.l2(l2_penalty))(x)
+        x = layers.BatchNormalization(momentum=batchnorm_momentum, name=name+"_bn1")(x)
+        x = layers.Activation(activation)(x)
+
+        x = layers.Conv2D(filters, kernel_size, padding=padding, name=name+"_conv2", kernel_regularizer=regularizers.l2(l2_penalty))(x)
+        x = layers.BatchNormalization(momentum=batchnorm_momentum, name=name+"_bn2")(x)
+
+        # Skip Connection
+        x = layers.Add(name=name+"_add")([x, input_tensor])
+        x = layers.Activation(activation)(x)
+        return x
 
     def build_model(self, train_X, config):
-        """
-        Builds a simple convoluted neural network based on the given config.
-        :param train_X: training data
-        :param config: dictionary of hyperparameters
-
-        Example config: 
-        {
-            "conv_channels": [
-                [16, 32, 32], 
-                [32, 64, 64], 
-            ],  # Different possible number of channels for the 3 conv layers
-            "conv_kernel_size": [3, 5],  # Different possible kernel sizes for each conv layer
-            "padding": ['same', 'valid'], # Different possible padding options
-            "activation": ['relu', 'tanh'],      # Different possible activation functions
-            "hidden_units": [32, 64],  # Different possible number of hidden units
-            "epochs": [20],                         # Different possible epochs 
-            "batch_size": [64, 128],                    # Different possible batch sizes
-            "learning_rate": [1e-5, 1e-4, 1e-3],            # Different possible learning rates
-            "initializer": ['he_uniform'], # Different possible initializers
-            "batchnorm_momentum": [0.9, 0.99],               # Different possible batchnorm momentum
-            "early_stopping": [True]
-        }
-        """
         # Initialize model
-        model = models.Sequential()  # Input shape: (28, 28)
-        pad = config["padding"]
-        activation = config["activation"]
-        kernel_size = config["conv_kernel_size"]
+        inputs = layers.Input(shape=train_X.shape[1:])
+        x = inputs
 
-        # Add CNN layers: 3 Conv2D layers and 2 MaxPooling2D layers
-        # 1st conv layer
-        model.add(layers.Conv2D(
-            config["conv_channels"][0], 
-            (kernel_size, kernel_size), 
-            input_shape=train_X.shape[1:],
-            padding=pad,
-            name="conv_1"
-        ))
-        model.add(layers.BatchNormalization(momentum=config["batchnorm_momentum"], name="batch_norm_1"))  # Add Batch Normalization after Convolution
-        model.add(layers.Activation(activation, name="activation_1"))  # Add Activation after Batch Normalization
-        model.add(layers.MaxPooling2D((2, 2), padding=pad, name="maxpool_1"))  # 1st max pooling layer
+        # Initial Conv Layer
+        x = layers.Conv2D(
+            filters=config["num_conv_channels"],
+            kernel_size=(config["conv_kernel_size"], config["conv_kernel_size"]),
+            padding=config["padding"],
+            name="initial_conv",
+            kernel_regularizer=regularizers.l2(config["l2_penalty"])
+        )(x)
+        x = layers.BatchNormalization(momentum=config["batchnorm_momentum"], name="initial_bn")(x)
+        x = layers.Activation(config["activation"])(x)
 
-        # 2nd conv layer
-        model.add(layers.Conv2D(
-            config["conv_channels"][1], 
-            (kernel_size, kernel_size), 
-            padding=pad, 
-            name="conv_2"
-        ))
-        model.add(layers.BatchNormalization(momentum=config["batchnorm_momentum"], name="batch_norm_2"))  # Add Batch Normalization after Convolution
-        model.add(layers.Activation(activation, name="activation_2"))  # Add Activation after Batch Normalization
-        model.add(layers.MaxPooling2D((2, 2), padding=pad, name="maxpool_2"))  # 2nd max pooling layer
+        # Build Residual Block
+        for i in range(config["num_res_blocks"]):
+            x = self._residual_block(
+                x=x, 
+                filters=config["num_conv_channels"], # Same number of filters of the initial conv2d layer
+                kernel_size=config["conv_kernel_size"],
+                padding=config["padding"], 
+                activation=config["activation"], 
+                batchnorm_momentum=config["batchnorm_momentum"],
+                name=f"resblock_{i+1}",
+                l2_penalty=config["l2_penalty"]
+            )
 
-        # 3rd conv layer
-        model.add(layers.Conv2D(
-            config["conv_channels"][2], 
-            (kernel_size, kernel_size), 
-            padding=pad, 
-            name="conv_3"
-        ))
-        model.add(layers.BatchNormalization(momentum=config["batchnorm_momentum"], name="batch_norm_3"))  # Add Batch Normalization after Convolution
-        model.add(layers.Activation(activation, name="activation_3"))  # Add Activation after Batch Normalization
+        # Classifier
+        x = layers.GlobalAveragePooling2D(name="global_avg_pool")(x)
+        x = layers.Dense(config["hidden_units"], activation=config["activation"], name="dense_1")(x)
+        outputs = layers.Dense(10, activation='softmax', name="output")(x)
 
-        # Add Dense layers
-        model.add(layers.Flatten(name="flatten"))  # Flatten output of conv layers
-        model.add(layers.Dense(config["hidden_units"], activation=activation, name="dense_1"))  # hidden dense layer
-        model.add(layers.Dense(10, activation='softmax', name="output"))  # Output layer
-        
-        optimizer = tf.keras.optimizers.legacy.Adam(learning_rate=config["learning_rate"])
+        model = tf.keras.models.Model(inputs, outputs)
+
+        optimizer = tf.keras.optimizers.Adam(learning_rate=config["learning_rate"])
         
         model.compile(optimizer=optimizer,
                       loss='sparse_categorical_crossentropy',
                       metrics=['accuracy'])
-        
+
         return model
 
     @overrides
@@ -119,7 +109,7 @@ class Cnn(BaseModel):
         if self.configs["early_stopping"]:
             early_stopping = tf.keras.callbacks.EarlyStopping(
                 monitor='val_loss',  # or 'val_accuracy'
-                patience=2,  # Number of epochs with no improvement to wait before stopping
+                patience=10,  # Number of epochs with no improvement to wait before stopping
                 verbose=1,
                 restore_best_weights=True  # Restore model weights from the epoch with the best value of the monitored quantity
             )
@@ -156,16 +146,18 @@ class Cnn(BaseModel):
     def train_with_ray_tune(self):
         print("\nStart Ray Tune hyperparameter search...")
         search_space = {
-            "conv_channels": tune.choice(self.configs["conv_channels"]),
+            "num_conv_channels": tune.choice(self.configs["num_conv_channels"]),
             "conv_kernel_size": tune.choice(self.configs["conv_kernel_size"]),
             "padding": tune.choice(self.configs["padding"]),
             "activation": tune.choice(self.configs["activation"]),
+            "num_res_blocks": tune.choice(self.configs["num_res_blocks"]),
             "hidden_units": tune.choice(self.configs["hidden_units"]),
             "epochs": tune.choice(self.configs["epochs"]),
             "batch_size": tune.choice(self.configs["batch_size"]),
             "learning_rate": tune.choice(self.configs["learning_rate"]),
             "initializer": tune.choice(self.configs["initializer"]),
             "batchnorm_momentum": tune.choice(self.configs["batchnorm_momentum"]),
+            "l2_penalty": tune.choice(self.configs["l2_penalty"]),
             "early_stopping": tune.choice(self.configs["early_stopping"])
         }
 
