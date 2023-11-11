@@ -1,5 +1,5 @@
-# deep-learning-with-mnist
-Deep Learning with MNIST dataset
+# deep-learning-playground-cv
+Deep Learning with CV datasets
 
 ## Set up:
 Note that the environment does not use brew or conda.
