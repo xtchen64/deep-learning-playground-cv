@@ -68,7 +68,7 @@ class Resnet(BaseModel):
 
         model = tf.keras.models.Model(inputs, outputs)
 
-        optimizer = tf.keras.optimizers.Adam(learning_rate=config["learning_rate"])
+        optimizer = tf.keras.optimizers.legacy.Adam(learning_rate=config["learning_rate"])
         
         model.compile(optimizer=optimizer,
                       loss='sparse_categorical_crossentropy',
@@ -94,7 +94,7 @@ class Resnet(BaseModel):
         # model = self.build_model_subclass_api(config)
         
         if verbose:
-            print(f"\nTraining CNN...")
+            print(f"\nTraining Resnet50...")
 
         callbacks = []
 

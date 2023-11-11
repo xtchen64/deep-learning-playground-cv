@@ -1,0 +1,9 @@
+main.configs = {
+    "epochs": [30],                         # Different possible epochs 
+    "batch_size": [128],                    # Different possible batch sizes
+    "learning_rate": [1e-3, 1e-4],            # Different possible learning rates
+    "early_stopping": True,
+    "patience": 5,
+    "num_samples": 2
+}
+main.write_results = True
