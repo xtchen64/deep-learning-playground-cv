@@ -22,7 +22,7 @@ def write_results_to_file(
         acc, 
         f1, 
         model_name, 
-        filename="/Users/xtchen/Projects/deep-learning-with-mnist/results/result.csv"
+        filename="/Users/xtchen/Projects/deep-learning-playgrouind-cv/results/result.csv"
     ):
     """
     Writes the results to the given file.

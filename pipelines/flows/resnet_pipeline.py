@@ -1,5 +1,5 @@
 import gin
-from models.cnn import Cnn
+from models.resnet import Resnet
 from data_processors.base_data_processor import BaseDataProcessor
 from utils.common_utils import write_results_to_file
 
@@ -14,7 +14,7 @@ def main(configs, write_results=True):
     train_X, train_y, val_X, val_y, test_X, test_y = data_processor.load_data()
 
     # initialize model
-    classifier = Cnn(
+    classifier = Resnet(
         train_X,
         train_y,
         val_X,
@@ -42,9 +42,9 @@ def main(configs, write_results=True):
         write_results_to_file(
             acc, 
             f1, 
-            model_name="cnn", 
-            filename="/Users/xtchen/Projects/deep-learning-with-mnist/results/result.csv")
+            model_name="resnet", 
+            filename="/Users/xtchen/Projects/deep-learning-playgrouind-cv/results/result.csv")
 
 if __name__ == "__main__":
-    gin.parse_config_file('pipelines/configs/cnn_pipeline.gin')
+    gin.parse_config_file('pipelines/configs/resnet_pipeline.gin')
     main()

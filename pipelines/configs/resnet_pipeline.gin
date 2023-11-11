@@ -1,17 +1,16 @@
 main.configs = {
-    "conv_channels": [
-        [16, 32, 32], 
-        [32, 64, 64], 
-    ],  # Different possible number of channels for the 3 conv layers
-    "conv_kernel_size": [2, 3],  # Different possible kernel sizes for each conv layer
-    "padding": ['same', 'valid'], # Different possible padding options
-    "activation": ['relu', 'tanh'],      # Different possible activation functions
-    "hidden_units": [32, 64],  # Different possible number of hidden units
-    "epochs": [60],                         # Different possible epochs 
-    "batch_size": [64, 128],                    # Different possible batch sizes
-    "learning_rate": [1e-5, 1e-4],            # Different possible learning rates
+    "num_conv_channels": [16, 32],  # Different possible number of channels for the 3 conv layers
+    "conv_kernel_size": [3],  # Different possible kernel sizes for each conv layer
+    "padding": ['same'], # Currently, only 'same' is supported
+    "activation": ['relu'],      # Different possible activation functions
+    "num_res_blocks": [1, 2],  # Different possible number of res blocks
+    "hidden_units": [64],  # Different possible number of hidden units
+    "epochs": [5],                         # Different possible epochs 
+    "batch_size": [128],                    # Different possible batch sizes
+    "learning_rate": [1e-3, 1e-4],            # Different possible learning rates
     "initializer": ['he_uniform'], # Different possible initializers
-    "batchnorm_momentum": [0.9, 0.99],               # Different possible batchnorm momentum
+    "batchnorm_momentum": [0.99],               # Different possible batchnorm momentum
+    "l2_penalty": [1e-3],
     "early_stopping": [True]
 }
 main.write_results = True

@@ -111,7 +111,7 @@ class Cnn(BaseModel):
         # Add TensorBoard callback
         if tensorboard:
             tensorboard_callback = tf.keras.callbacks.TensorBoard(
-                log_dir="/Users/xtchen/Projects/deep-learning-with-mnist/results/tensorboard", 
+                log_dir="/Users/xtchen/Projects/deep-learning-playgrouind-cv/results/tensorboard", 
                 histogram_freq=1
             )
             callbacks.append(tensorboard_callback)
