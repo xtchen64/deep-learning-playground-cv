@@ -1,6 +1,6 @@
 main.configs = {
     "epochs": [30],                         # Different possible epochs 
-    "batch_size": [128],                    # Different possible batch sizes
+    "batch_size": [64, 128],                    # Different possible batch sizes
     "learning_rate": [1e-3, 1e-4],            # Different possible learning rates
     "early_stopping": True,
     "patience": 5,
